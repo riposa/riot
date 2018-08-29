@@ -16,7 +16,7 @@
 package riot
 
 import (
-	"github.com/go-ego/riot/types"
+	"riot/types"
 )
 
 type rankerAddDocReq struct {
@@ -31,6 +31,7 @@ type rankerAddDocReq struct {
 type rankerRankReq struct {
 	docs             []types.IndexedDoc
 	options          types.RankOpts
+	filterOpt []types.FilterOptions
 	rankerReturnChan chan rankerReturnReq
 	countDocsOnly    bool
 }
@@ -67,7 +68,7 @@ func (engine *Engine) rankerRankWorker(shard int) {
 		}
 		request.options.OutputOffset = 0
 		outputDocs, numDocs := engine.rankers[shard].Rank(request.docs,
-			request.options, request.countDocsOnly)
+			request.options, request.countDocsOnly, request.filterOpt)
 
 		request.rankerReturnChan <- rankerReturnReq{
 			docs: outputDocs, numDocs: numDocs}

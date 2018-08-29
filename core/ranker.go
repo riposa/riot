@@ -20,8 +20,8 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/go-ego/riot/types"
-	"github.com/go-ego/riot/utils"
+	"riot/types"
+	"riot/utils"
 )
 
 // Ranker ranker
@@ -171,12 +171,13 @@ func (ranker *Ranker) RankDocID(docs []types.IndexedDoc,
 
 // RankDocs rank docs by types.ScoredDocs
 func (ranker *Ranker) RankDocs(docs []types.IndexedDoc,
-	options types.RankOpts, countDocsOnly bool) (types.ScoredDocs, int) {
+	options types.RankOpts, countDocsOnly bool, filterOpt []types.FilterOptions) (types.ScoredDocs, int) {
 
 	var outputDocs types.ScoredDocs
 	numDocs := 0
 
 	for _, d := range docs {
+		var overFlag int
 		ranker.lock.RLock()
 		// 判断 doc 是否存在
 		if _, ok := ranker.lock.docs[d.DocId]; ok {
@@ -190,16 +191,49 @@ func (ranker *Ranker) RankDocs(docs []types.IndexedDoc,
 			scores := options.ScoringCriteria.Score(d, fs)
 			if len(scores) > 0 {
 				if !countDocsOnly {
-					outputDocs = append(outputDocs, types.ScoredDoc{
-						DocId: d.DocId,
-						// new
-						Fields:  fs,
-						Content: content,
-						Attri:   attri,
-						//
-						Scores:           scores,
-						TokenSnippetLocs: d.TokenSnippetLocs,
-						TokenLocs:        d.TokenLocs})
+					if filterOpt != nil {
+						if attr, ok := attri.(map[string]interface{}); ok {
+							// 尝试过滤不符合要求的记录
+							for _, f := range filterOpt {
+								if ori, ok := attr[f.Attr]; ok {
+									if r, err := f.Val.Compare(ori, f.Op); err == nil {
+										if r == true {
+											//满足条件, 放行
+										} else {
+											// 不满足条件, 跳过
+											overFlag = 1
+											break
+										}
+									} else {
+										// compare failed
+										log.SetPrefix("[ERROR]")
+										log.Print(err)
+									}
+								} else {
+									// 找不到对应的attr
+									log.SetPrefix("[WARNING]")
+									log.Printf("在Attri结构体中无法找到该属性: %s", f.Attr)
+								}
+							}
+						} else {
+							log.SetPrefix("[ERROR]")
+							log.Print("需要attri的类型为map[string]interface{}, filterOption功能才会生效")
+						}
+					}
+					if overFlag == 1 {
+						continue
+					} else {
+						outputDocs = append(outputDocs, types.ScoredDoc{
+							DocId: d.DocId,
+							// new
+							Fields:  fs,
+							Content: content,
+							Attri:   attri,
+							//
+							Scores:           scores,
+							TokenSnippetLocs: d.TokenSnippetLocs,
+							TokenLocs:        d.TokenLocs})
+					}
 				}
 				numDocs++
 			}
@@ -228,7 +262,7 @@ func (ranker *Ranker) RankDocs(docs []types.IndexedDoc,
 // Rank rank docs
 // 给文档评分并排序
 func (ranker *Ranker) Rank(docs []types.IndexedDoc,
-	options types.RankOpts, countDocsOnly bool) (interface{}, int) {
+	options types.RankOpts, countDocsOnly bool, filterOpt []types.FilterOptions) (interface{}, int) {
 
 	if ranker.initialized == false {
 		log.Fatal("The Ranker has not been initialized.")
@@ -240,6 +274,6 @@ func (ranker *Ranker) Rank(docs []types.IndexedDoc,
 		return outputDocs, numDocs
 	}
 
-	outputDocs, numDocs := ranker.RankDocs(docs, options, countDocsOnly)
+	outputDocs, numDocs := ranker.RankDocs(docs, options, countDocsOnly, filterOpt)
 	return outputDocs, numDocs
 }

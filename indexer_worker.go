@@ -18,7 +18,7 @@ package riot
 import (
 	"sync/atomic"
 
-	"github.com/go-ego/riot/types"
+	"riot/types"
 )
 
 type indexerAddDocReq struct {
@@ -35,6 +35,7 @@ type indexerLookupReq struct {
 	rankerReturnChan chan rankerReturnReq
 	orderless        bool
 	logic            types.Logic
+	filterOpt []types.FilterOptions
 }
 
 type indexerRemoveDocReq struct {
@@ -158,6 +159,7 @@ func (engine *Engine) indexerLookupWorker(shard int) {
 		rankerRequest := rankerRankReq{
 			countDocsOnly:    request.countDocsOnly,
 			docs:             docs,
+			filterOpt: request.filterOpt,
 			options:          request.options,
 			rankerReturnChan: request.rankerReturnChan,
 		}

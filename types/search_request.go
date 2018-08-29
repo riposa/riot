@@ -15,6 +15,14 @@
 
 package types
 
+const (
+	Greater Op = "GREATER"
+	Less Op = "LESS"
+	GreaterEqual Op = "GREATEREQUAL"
+	LessEqual Op = "LESSEQUAL"
+	Equal Op = "EQUAL"
+)
+
 // SearchReq search request options
 type SearchReq struct {
 	// 搜索的短语（必须是 UTF-8 格式），会被分词
@@ -51,6 +59,9 @@ type SearchReq struct {
 	// 不排序，对于可在引擎外部（比如客户端）排序情况适用
 	// 对返回文档很多的情况打开此选项可以有效节省时间
 	Orderless bool
+
+	// filterOption, 用于在排序阶段排除attri中不符合要求的记录
+	FilterOpt []FilterOptions
 }
 
 // RankOpts rank options
@@ -66,6 +77,18 @@ type RankOpts struct {
 
 	// 最大输出的搜索结果数，为 0 时无限制
 	MaxOutputs int
+}
+
+type Op string
+
+type CompareVal interface {
+	Compare(attrVal interface{}, op Op) (bool, error)
+}
+
+type FilterOptions struct {
+	Attr string
+	Op Op
+	Val CompareVal
 }
 
 // Logic logic options

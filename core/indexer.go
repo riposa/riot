@@ -25,8 +25,8 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/go-ego/riot/types"
-	"github.com/go-ego/riot/utils"
+	"riot/types"
+	"riot/utils"
 )
 
 // Indexer 索引器

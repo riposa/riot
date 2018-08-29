@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/go-ego/gse"
-	"github.com/go-ego/riot/types"
+	"riot/types"
 	"github.com/vcaesar/tt"
 )
 

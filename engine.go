@@ -33,10 +33,10 @@ import (
 
 	"sync/atomic"
 
-	"github.com/go-ego/riot/core"
-	"github.com/go-ego/riot/store"
-	"github.com/go-ego/riot/types"
-	"github.com/go-ego/riot/utils"
+	"riot/core"
+	"riot/store"
+	"riot/types"
+	"riot/utils"
 
 	"github.com/go-ego/gse"
 	"github.com/go-ego/murmur"
@@ -738,6 +738,7 @@ func (engine *Engine) Search(request types.SearchReq) (output types.SearchResp) 
 		rankerReturnChan: rankerReturnChan,
 		orderless:        request.Orderless,
 		logic:            request.Logic,
+		filterOpt: request.FilterOpt,
 	}
 
 	// 向索引器发送查找请求

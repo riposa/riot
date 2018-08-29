@@ -3,7 +3,7 @@ package core
 import (
 	"fmt"
 
-	"github.com/go-ego/riot/types"
+	"riot/types"
 )
 
 func indicesToString(indexer *Indexer, token string) (output string) {
