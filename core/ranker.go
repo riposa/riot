@@ -32,7 +32,7 @@ type Ranker struct {
 		docs   map[uint64]bool
 		// new
 		content map[uint64]string
-		attri   map[uint64]interface{}
+		attri   map[uint64]map[string]types.Attribute
 	}
 
 	idOnly      bool
@@ -56,7 +56,7 @@ func (ranker *Ranker) Init(onlyID ...bool) {
 	if !ranker.idOnly {
 		// new
 		ranker.lock.content = make(map[uint64]string)
-		ranker.lock.attri = make(map[uint64]interface{})
+		ranker.lock.attri = make(map[uint64]map[string]types.Attribute)
 	}
 }
 
@@ -80,7 +80,9 @@ func (ranker *Ranker) AddDoc(
 		}
 
 		if len(content) > 1 {
-			ranker.lock.attri[docId] = content[1]
+			if c, ok :=content[1].(map[string]types.Attribute); ok {
+				ranker.lock.attri[docId] = c
+			}
 			// ranker.lock.attri[docId] = attri
 		}
 	}
@@ -192,32 +194,27 @@ func (ranker *Ranker) RankDocs(docs []types.IndexedDoc,
 			if len(scores) > 0 {
 				if !countDocsOnly {
 					if filterOpt != nil {
-						if attr, ok := attri.(map[string]interface{}); ok {
-							// 尝试过滤不符合要求的记录
-							for _, f := range filterOpt {
-								if ori, ok := attr[f.Attr]; ok {
-									if r, err := f.Val.Compare(ori, f.Op); err == nil {
-										if r == true {
-											//满足条件, 放行
-										} else {
-											// 不满足条件, 跳过
-											overFlag = 1
-											break
-										}
+						// 尝试过滤不符合要求的记录
+						for _, f := range filterOpt {
+							if ori, ok := attri[f.Attr]; ok {
+								if r, err := f.Val.Compare(ori.Value, f.Op); err == nil {
+									if r == true {
+										//满足条件, 放行
 									} else {
-										// compare failed
-										log.SetPrefix("[ERROR]")
-										log.Print(err)
+										// 不满足条件, 跳过
+										overFlag = 1
+										break
 									}
 								} else {
-									// 找不到对应的attr
-									log.SetPrefix("[WARNING]")
-									log.Printf("在Attri结构体中无法找到该属性: %s", f.Attr)
+									// compare failed
+									log.SetPrefix("[ERROR]")
+									log.Print(err)
 								}
+							} else {
+								// 找不到对应的attr
+								log.SetPrefix("[WARNING]")
+								log.Printf("在Attri结构体中无法找到该属性: %s", f.Attr)
 							}
-						} else {
-							log.SetPrefix("[ERROR]")
-							log.Print("需要attri的类型为map[string]interface{}, filterOption功能才会生效")
 						}
 					}
 					if overFlag == 1 {

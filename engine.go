@@ -41,6 +41,7 @@ import (
 	"github.com/go-ego/gse"
 	"github.com/go-ego/murmur"
 	"github.com/shirou/gopsutil/mem"
+	"reflect"
 )
 
 const (
@@ -661,6 +662,39 @@ func (engine *Engine) Ranks(request types.SearchReq, rankOpts types.RankOpts,
 			sort.Sort(rankOutput)
 		}
 	}
+	// aggregate facet
+	facetSlice := make(map[string]*types.AttrPair)
+	for _, out := range rankOutput {
+		for k, v := range out.Attri {
+			if v.Indexed {
+				if tmpAttrPair, ok := facetSlice[k]; ok {
+					// attribute already exists
+					var existFlag int
+					for _, val := range tmpAttrPair.Values{
+						if reflect.DeepEqual(val.Val, v.Value) {
+							val.RepeatTimes ++
+							existFlag = 1
+						}
+					}
+					if existFlag == 0{
+						tmpAttrPair.Values = append(tmpAttrPair.Values, &types.Attr{
+							Val:         v.Value,
+							RepeatTimes: 1,
+						})
+					}
+				} else {
+					tmpAttrPair := &types.AttrPair{
+						Key:    k,
+					}
+					tmpAttrPair.Values = append(tmpAttrPair.Values, &types.Attr{
+						Val: v.Value,
+						RepeatTimes: 1,
+					})
+					facetSlice[k] = tmpAttrPair
+				}
+			}
+		}
+	}
 
 	// 准备输出
 	output.Tokens = tokens
@@ -676,6 +710,7 @@ func (engine *Engine) Ranks(request types.SearchReq, rankOpts types.RankOpts,
 			output.Docs = rankOutput[start:end]
 		}
 	}
+	output.Facet = facetSlice
 
 	output.NumDocs = numDocs
 	output.Timeout = isTimeout
@@ -690,6 +725,7 @@ func (engine *Engine) SearchDoc(request types.SearchReq) (output types.SearchDoc
 	return types.SearchDoc{
 		BaseResp: resp.BaseResp,
 		Docs:     resp.Docs.(types.ScoredDocs),
+		Facet: resp.Facet,
 	}
 }
 

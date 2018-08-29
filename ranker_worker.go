@@ -25,7 +25,7 @@ type rankerAddDocReq struct {
 	// new
 	content string
 	// new 属性
-	attri interface{}
+	attri map[string]types.Attribute
 }
 
 type rankerRankReq struct {

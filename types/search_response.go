@@ -38,11 +38,14 @@ type BaseResp struct {
 	NumDocs int
 }
 
+type FacetResult map[string]*AttrPair
+
 // SearchResp search response options
 type SearchResp struct {
 	BaseResp
 	// 搜索到的文档，已排序
 	Docs interface{}
+	Facet FacetResult
 }
 
 // SearchDoc search response options
@@ -50,6 +53,7 @@ type SearchDoc struct {
 	BaseResp
 	// 搜索到的文档，已排序
 	Docs []ScoredDoc
+	Facet FacetResult
 }
 
 // SearchID search response options
@@ -65,10 +69,34 @@ type Content struct {
 	Content string
 
 	// new 属性 Attri
-	Attri interface{}
+	Attri map[string]Attribute
 
 	// new 返回评分字段
 	Fields interface{}
+}
+
+type AttrPair struct {
+	Key string
+	Values Attrs
+}
+
+type Attrs []*Attr
+
+func (a Attrs) Len() int {
+	return len(a)
+}
+
+func (a Attrs) Less(i, j int) bool {
+	return a[i].RepeatTimes < a[j].RepeatTimes
+}
+
+func (a Attrs) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}
+
+type Attr struct {
+	Val interface{}
+	RepeatTimes uint64
 }
 
 // ScoredDoc scored the document
@@ -78,7 +106,7 @@ type ScoredDoc struct {
 	// new 返回文档 Content
 	Content string
 	// new 返回文档属性 Attri
-	Attri interface{}
+	Attri map[string]Attribute
 	// new 返回评分字段
 	Fields interface{}
 

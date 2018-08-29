@@ -19,6 +19,12 @@ package types
 // type DocIndexData DocData
 type DocIndexData = DocData
 
+type Attribute struct {
+	Key string
+	Value interface{}
+	Indexed bool
+}
+
 // DocData type document Index Data struct
 type DocData struct {
 	// 文档全文（必须是 UTF-8 格式），用于生成待索引的关键词
@@ -27,7 +33,7 @@ type DocData struct {
 	// new 类别
 	// Class string
 	// new 属性
-	Attri interface{}
+	Attri map[string]Attribute
 
 	// 文档的关键词
 	// 当 Content 不为空的时候，优先从 Content 中分词得到关键词。
