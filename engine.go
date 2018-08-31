@@ -42,6 +42,7 @@ import (
 	"github.com/go-ego/murmur"
 	"github.com/shirou/gopsutil/mem"
 	"reflect"
+	"github.com/deckarep/golang-set"
 )
 
 const (
@@ -670,26 +671,80 @@ func (engine *Engine) Ranks(request types.SearchReq, rankOpts types.RankOpts,
 				if tmpAttrPair, ok := facetSlice[k]; ok {
 					// attribute already exists
 					var existFlag int
-					for _, val := range tmpAttrPair.Values{
-						if reflect.DeepEqual(val.Val, v.Value) {
-							val.RepeatTimes ++
-							existFlag = 1
+					if stringVal, ok := v.Value.(string); ok {
+						existFlag = 0
+						for _, val := range tmpAttrPair.Values{
+							if _, ok := val.Val.(string); ok && val.Val == stringVal {
+								val.RepeatTimes ++
+								existFlag = 1
+							}
 						}
-					}
-					if existFlag == 0{
-						tmpAttrPair.Values = append(tmpAttrPair.Values, &types.Attr{
-							Val:         v.Value,
-							RepeatTimes: 1,
-						})
+						if existFlag == 0{
+							tmpAttrPair.Values = append(tmpAttrPair.Values, &types.Attr{
+								Val:         v.Value,
+								RepeatTimes: 1,
+							})
+						}
+					} else {
+						if sliceVal, ok := v.Value.([]string); ok {
+							existSet := mapset.NewSet()
+							sliceValSet := mapset.NewSet()
+							for _, val := range tmpAttrPair.Values {
+								if tmpVal, ok := val.Val.(string); ok {
+									for _, i := range sliceVal {
+										sliceValSet.Add(i)
+										if tmpVal == i {
+											val.RepeatTimes ++
+											existSet.Add(i)
+										}
+									}
+								} else {
+									log.SetPrefix("[ERROR]")
+									log.Print("attribute value type not same")
+									continue
+								}
+							}
+							newSet := sliceValSet.Difference(existSet)
+							for _, i := range newSet.ToSlice() {
+								attr := &types.Attr{
+									Val:   i,
+									RepeatTimes: 1,
+								}
+								facetSlice[k].Values = append(facetSlice[k].Values, attr)
+							}
+						} else {
+							existFlag = 0
+							for _, val := range tmpAttrPair.Values{
+								if reflect.DeepEqual(val.Val, v.Value) {
+									val.RepeatTimes ++
+									existFlag = 1
+								}
+							}
+							if existFlag == 0{
+								tmpAttrPair.Values = append(tmpAttrPair.Values, &types.Attr{
+									Val:         v.Value,
+									RepeatTimes: 1,
+								})
+							}
+						}
 					}
 				} else {
 					tmpAttrPair := &types.AttrPair{
 						Key:    k,
 					}
-					tmpAttrPair.Values = append(tmpAttrPair.Values, &types.Attr{
-						Val: v.Value,
-						RepeatTimes: 1,
-					})
+					if sliceValue, ok := v.Value.([]string); ok {
+						for _, i := range sliceValue {
+							tmpAttrPair.Values = append(tmpAttrPair.Values, &types.Attr{
+								Val: i,
+								RepeatTimes: 1,
+							})
+						}
+					} else {
+						tmpAttrPair.Values = append(tmpAttrPair.Values, &types.Attr{
+							Val: v.Value,
+							RepeatTimes: 1,
+						})
+					}
 					facetSlice[k] = tmpAttrPair
 				}
 			}
