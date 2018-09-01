@@ -38,11 +38,11 @@ import (
 	"riot/types"
 	"riot/utils"
 
+	"github.com/deckarep/golang-set"
 	"github.com/go-ego/gse"
 	"github.com/go-ego/murmur"
 	"github.com/shirou/gopsutil/mem"
 	"reflect"
-	"github.com/deckarep/golang-set"
 )
 
 const (
@@ -673,13 +673,13 @@ func (engine *Engine) Ranks(request types.SearchReq, rankOpts types.RankOpts,
 					var existFlag int
 					if stringVal, ok := v.Value.(string); ok {
 						existFlag = 0
-						for _, val := range tmpAttrPair.Values{
+						for _, val := range tmpAttrPair.Values {
 							if _, ok := val.Val.(string); ok && val.Val == stringVal {
-								val.RepeatTimes ++
+								val.RepeatTimes++
 								existFlag = 1
 							}
 						}
-						if existFlag == 0{
+						if existFlag == 0 {
 							tmpAttrPair.Values = append(tmpAttrPair.Values, &types.Attr{
 								Val:         v.Value,
 								RepeatTimes: 1,
@@ -694,7 +694,7 @@ func (engine *Engine) Ranks(request types.SearchReq, rankOpts types.RankOpts,
 									for _, i := range sliceVal {
 										sliceValSet.Add(i)
 										if tmpVal == i {
-											val.RepeatTimes ++
+											val.RepeatTimes++
 											existSet.Add(i)
 										}
 									}
@@ -707,20 +707,20 @@ func (engine *Engine) Ranks(request types.SearchReq, rankOpts types.RankOpts,
 							newSet := sliceValSet.Difference(existSet)
 							for _, i := range newSet.ToSlice() {
 								attr := &types.Attr{
-									Val:   i,
+									Val:         i,
 									RepeatTimes: 1,
 								}
 								facetSlice[k].Values = append(facetSlice[k].Values, attr)
 							}
 						} else {
 							existFlag = 0
-							for _, val := range tmpAttrPair.Values{
+							for _, val := range tmpAttrPair.Values {
 								if reflect.DeepEqual(val.Val, v.Value) {
-									val.RepeatTimes ++
+									val.RepeatTimes++
 									existFlag = 1
 								}
 							}
-							if existFlag == 0{
+							if existFlag == 0 {
 								tmpAttrPair.Values = append(tmpAttrPair.Values, &types.Attr{
 									Val:         v.Value,
 									RepeatTimes: 1,
@@ -730,18 +730,18 @@ func (engine *Engine) Ranks(request types.SearchReq, rankOpts types.RankOpts,
 					}
 				} else {
 					tmpAttrPair := &types.AttrPair{
-						Key:    k,
+						Key: k,
 					}
 					if sliceValue, ok := v.Value.([]string); ok {
 						for _, i := range sliceValue {
 							tmpAttrPair.Values = append(tmpAttrPair.Values, &types.Attr{
-								Val: i,
+								Val:         i,
 								RepeatTimes: 1,
 							})
 						}
 					} else {
 						tmpAttrPair.Values = append(tmpAttrPair.Values, &types.Attr{
-							Val: v.Value,
+							Val:         v.Value,
 							RepeatTimes: 1,
 						})
 					}
@@ -780,7 +780,7 @@ func (engine *Engine) SearchDoc(request types.SearchReq) (output types.SearchDoc
 	return types.SearchDoc{
 		BaseResp: resp.BaseResp,
 		Docs:     resp.Docs.(types.ScoredDocs),
-		Facet: resp.Facet,
+		Facet:    resp.Facet,
 	}
 }
 
@@ -829,7 +829,8 @@ func (engine *Engine) Search(request types.SearchReq) (output types.SearchResp) 
 		rankerReturnChan: rankerReturnChan,
 		orderless:        request.Orderless,
 		logic:            request.Logic,
-		filterOpt: request.FilterOpt,
+		filterOpt:        request.FilterOpt,
+		orderAtTheEnd:    request.OrderAtTheEnd,
 	}
 
 	// 向索引器发送查找请求

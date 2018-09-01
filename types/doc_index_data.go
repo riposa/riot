@@ -20,8 +20,8 @@ package types
 type DocIndexData = DocData
 
 type Attribute struct {
-	Key string
-	Value interface{}
+	Key     string
+	Value   interface{}
 	Indexed bool
 }
 

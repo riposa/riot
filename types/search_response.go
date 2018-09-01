@@ -44,7 +44,7 @@ type FacetResult map[string]*AttrPair
 type SearchResp struct {
 	BaseResp
 	// 搜索到的文档，已排序
-	Docs interface{}
+	Docs  interface{}
 	Facet FacetResult
 }
 
@@ -52,7 +52,7 @@ type SearchResp struct {
 type SearchDoc struct {
 	BaseResp
 	// 搜索到的文档，已排序
-	Docs []ScoredDoc
+	Docs  []ScoredDoc
 	Facet FacetResult
 }
 
@@ -76,7 +76,7 @@ type Content struct {
 }
 
 type AttrPair struct {
-	Key string
+	Key    string
 	Values Attrs
 }
 
@@ -95,7 +95,7 @@ func (a Attrs) Swap(i, j int) {
 }
 
 type Attr struct {
-	Val interface{}
+	Val         interface{}
 	RepeatTimes uint64
 }
 

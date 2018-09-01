@@ -7,8 +7,8 @@ import (
 	"os"
 	"testing"
 
-	"riot/types"
 	"github.com/vcaesar/tt"
+	"riot/types"
 )
 
 func makeDocIds() map[uint64]bool {

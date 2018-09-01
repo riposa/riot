@@ -16,11 +16,11 @@
 package types
 
 const (
-	Greater Op = "GREATER"
-	Less Op = "LESS"
+	Greater      Op = "GREATER"
+	Less         Op = "LESS"
 	GreaterEqual Op = "GREATEREQUAL"
-	LessEqual Op = "LESSEQUAL"
-	Equal Op = "EQUAL"
+	LessEqual    Op = "LESSEQUAL"
+	Equal        Op = "EQUAL"
 )
 
 // SearchReq search request options
@@ -56,6 +56,9 @@ type SearchReq struct {
 	// 设为 true 时仅统计搜索到的文档个数，不返回具体的文档
 	CountDocsOnly bool
 
+	// order at last
+	OrderAtTheEnd bool
+
 	// 不排序，对于可在引擎外部（比如客户端）排序情况适用
 	// 对返回文档很多的情况打开此选项可以有效节省时间
 	Orderless bool
@@ -87,8 +90,8 @@ type CompareVal interface {
 
 type FilterOptions struct {
 	Attr string
-	Op Op
-	Val CompareVal
+	Op   Op
+	Val  CompareVal
 }
 
 // Logic logic options

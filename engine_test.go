@@ -10,8 +10,8 @@ import (
 	"testing"
 
 	"github.com/go-ego/gse"
-	"riot/types"
 	"github.com/vcaesar/tt"
+	"riot/types"
 )
 
 type ScoringFields struct {

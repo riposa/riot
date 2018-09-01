@@ -80,7 +80,7 @@ func (ranker *Ranker) AddDoc(
 		}
 
 		if len(content) > 1 {
-			if c, ok :=content[1].(map[string]types.Attribute); ok {
+			if c, ok := content[1].(map[string]types.Attribute); ok {
 				ranker.lock.attri[docId] = c
 			}
 			// ranker.lock.attri[docId] = attri
@@ -173,7 +173,7 @@ func (ranker *Ranker) RankDocID(docs []types.IndexedDoc,
 
 // RankDocs rank docs by types.ScoredDocs
 func (ranker *Ranker) RankDocs(docs []types.IndexedDoc,
-	options types.RankOpts, countDocsOnly bool, filterOpt []types.FilterOptions) (types.ScoredDocs, int) {
+	options types.RankOpts, countDocsOnly bool, filterOpt []types.FilterOptions, orderAtTheEnd bool) (types.ScoredDocs, int) {
 
 	var outputDocs types.ScoredDocs
 	numDocs := 0
@@ -240,7 +240,7 @@ func (ranker *Ranker) RankDocs(docs []types.IndexedDoc,
 	}
 
 	// 排序
-	if !countDocsOnly {
+	if !countDocsOnly && !orderAtTheEnd {
 		if options.ReverseOrder {
 			sort.Sort(sort.Reverse(outputDocs))
 		} else {
@@ -259,7 +259,7 @@ func (ranker *Ranker) RankDocs(docs []types.IndexedDoc,
 // Rank rank docs
 // 给文档评分并排序
 func (ranker *Ranker) Rank(docs []types.IndexedDoc,
-	options types.RankOpts, countDocsOnly bool, filterOpt []types.FilterOptions) (interface{}, int) {
+	options types.RankOpts, countDocsOnly bool, filterOpt []types.FilterOptions, orderAtTheEnd bool) (interface{}, int) {
 
 	if ranker.initialized == false {
 		log.Fatal("The Ranker has not been initialized.")
@@ -271,6 +271,6 @@ func (ranker *Ranker) Rank(docs []types.IndexedDoc,
 		return outputDocs, numDocs
 	}
 
-	outputDocs, numDocs := ranker.RankDocs(docs, options, countDocsOnly, filterOpt)
+	outputDocs, numDocs := ranker.RankDocs(docs, options, countDocsOnly, filterOpt, orderAtTheEnd)
 	return outputDocs, numDocs
 }
