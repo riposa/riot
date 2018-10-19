@@ -3,7 +3,7 @@ package core
 import (
 	"fmt"
 
-	"riot/types"
+	"github.com/riposa/riot/types"
 )
 
 func indicesToString(indexer *Indexer, token string) (output string) {

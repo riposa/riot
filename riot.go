@@ -26,8 +26,8 @@ import (
 
 	"github.com/go-ego/murmur"
 	toml "github.com/go-vgo/gt/conf"
-	"riot/core"
-	"riot/types"
+	"github.com/riposa/riot/core"
+	"github.com/riposa/riot/types"
 )
 
 // New create a new engine with mode

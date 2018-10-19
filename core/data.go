@@ -17,7 +17,7 @@ package core
 import (
 	"sync"
 
-	"riot/types"
+	"github.com/riposa/riot/types"
 )
 
 var (

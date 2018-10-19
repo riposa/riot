@@ -21,7 +21,7 @@ import (
 	"strings"
 
 	"github.com/go-ego/gpy"
-	"riot/types"
+	"github.com/riposa/riot/types"
 )
 
 // TMap defines the tokens map type map[string][]int

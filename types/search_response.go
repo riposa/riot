@@ -16,7 +16,7 @@
 package types
 
 import (
-	"riot/utils"
+	"github.com/riposa/riot/utils"
 )
 
 // BaseResp search response options

@@ -22,7 +22,7 @@ import (
 	"encoding/gob"
 	"sync/atomic"
 
-	"riot/types"
+	"github.com/riposa/riot/types"
 )
 
 type storeIndexDocReq struct {

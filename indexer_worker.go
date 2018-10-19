@@ -18,7 +18,7 @@ package riot
 import (
 	"sync/atomic"
 
-	"riot/types"
+	"github.com/riposa/riot/types"
 )
 
 type indexerAddDocReq struct {
@@ -130,14 +130,10 @@ func (engine *Engine) indexerLookupWorker(shard int) {
 			docs, numDocs = engine.indexers[shard].Lookup(
 				request.tokens, request.labels,
 				nil, request.countDocsOnly, request.logic)
-			// docs, numDocs = engine.indexers[shard].Lookup(request.tokens,
-			// request.labels, nil, request.countDocsOnly)
 		} else {
 			docs, numDocs = engine.indexers[shard].Lookup(
 				request.tokens, request.labels,
 				request.docIds, request.countDocsOnly, request.logic)
-			// docs, numDocs = engine.indexers[shard].Lookup(request.tokens,
-			// request.labels, request.docIds, request.countDocsOnly)
 		}
 
 		if request.countDocsOnly {

@@ -16,7 +16,7 @@
 package riot
 
 import (
-	"riot/types"
+	"github.com/riposa/riot/types"
 )
 
 type rankerAddDocReq struct {

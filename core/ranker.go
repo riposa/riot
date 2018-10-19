@@ -20,8 +20,8 @@ import (
 	"sort"
 	"sync"
 
-	"riot/types"
-	"riot/utils"
+	"github.com/riposa/riot/types"
+	"github.com/riposa/riot/utils"
 )
 
 // Ranker ranker

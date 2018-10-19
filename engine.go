@@ -33,10 +33,10 @@ import (
 
 	"sync/atomic"
 
-	"riot/core"
-	"riot/store"
-	"riot/types"
-	"riot/utils"
+	"github.com/riposa/riot/core"
+	"github.com/riposa/riot/store"
+	"github.com/riposa/riot/types"
+	"github.com/riposa/riot/utils"
 
 	"github.com/deckarep/golang-set"
 	"github.com/go-ego/gse"
