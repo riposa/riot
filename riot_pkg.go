@@ -24,7 +24,7 @@ import (
 	_ "github.com/coreos/bbolt"
 	// _ "github.com/boltdb/bolt"
 	_ "github.com/dgraph-io/badger"
-	_ "github.com/go-ego/gse"
+	_ "github.com/riposa/gse"
 	_ "github.com/go-ego/murmur"
 	_ "github.com/syndtr/goleveldb/leveldb"
 )

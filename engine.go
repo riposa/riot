@@ -39,7 +39,7 @@ import (
 	"github.com/riposa/riot/utils"
 
 	"github.com/deckarep/golang-set"
-	"github.com/go-ego/gse"
+	"github.com/riposa/gse"
 	"github.com/go-ego/murmur"
 	"github.com/shirou/gopsutil/mem"
 	"reflect"

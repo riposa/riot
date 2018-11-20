@@ -9,7 +9,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/go-ego/gse"
+	"github.com/riposa/gse"
 	"github.com/riposa/riot/types"
 	"github.com/vcaesar/tt"
 )
